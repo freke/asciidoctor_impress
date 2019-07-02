@@ -1,0 +1,31 @@
+- if attr? 'data-x'
+  - data_x = attr 'data-x'
+- if attr? 'data-y'
+  - data_y = attr 'data-y'
+- if attr? 'data-z'
+  - data_z = attr 'data-z'
+- if attr? 'data-rotate'
+  - data_rotate = attr 'data-rotate'
+- if attr? 'data-scale'
+  - data_scale = attr 'data-scale'
+
+- if attr? :bgcolor
+  - styles = %(background-color: #{attr :bgcolor})
+- else
+  - styles=nil
+
+- titleless = (title = self.title) == '!'
+- hide_title = (titleless || (option? :notitle))
+
+- (my_class ||= 'step') << " " << ((option? :slide) ? 'slide' : '') << " " << ((option? :skip) ? 'skip' : '')
+
+- if @level == 1
+  div id=id class=my_class data-x=data_x data-y=data_y data-z=data_z data-rotate=data_rotate data-scale=data_scale style=styles
+    - unless hide_title
+      h1 =title
+    =content
+
+- if @level >= 2
+  - unless hide_title
+    *{tag: %(h#{@level})} =title
+  =content

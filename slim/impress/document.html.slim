@@ -1,0 +1,74 @@
+- link_assets = attr? 'link-assets'
+- endline = "\n"
+doctype 5
+/ This should really be a media query in the css
+html lang=(attr :lang, 'en' unless attr? :nolang) class="aspect-#{attr 'impress-aspect', '4-3'}"
+  head
+    meta charset=(attr :encoding, 'UTF-8')
+    meta name='generator' content="Asciidoctor #{attr 'asciidoctor-version'}, impress.js backend"
+    title=((doctitle :sanitize => true) || (attr 'untitled-label'))
+    - {:description => 'description', :author => 'author', :copyright => 'copyright',
+       :revdate => 'presdate', :corpname => 'company'}.each do |key, name|
+      - if attr? key
+        meta name=name content=(attr key)
+    - if attr? :icons, 'font'
+      - if (attr 'iconfont-remote', '')
+        link rel='stylesheet' href=(attr 'iconfont-cdn', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css')
+      - else
+        link rel='stylesheet' href=normalize_web_path("#{attr 'iconfont-name', 'font-awesome'}.css", (attr :stylesdir, ''))
+    - if attr? 'source-highlighter'
+      link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"
+    link href='css/impress.css' rel='stylesheet'
+    link href='css/asciidoctor-sony.css' rel='stylesheet'
+    link rel='shortcut icon' href='images/favicon.png'
+    link rel='apple-touch-icon' href='images/apple-touch-icon.png'
+    - if attr? :math
+      script type='text/x-mathjax-config'
+        |MathJax.Hub.Config({
+           tex2jax: {
+             inlineMath: [['\\(','\\)']],
+             displayMath: [['\\[','\\]']],
+             ignoreClass: 'nostem|nolatexmath'
+           },
+           asciimath2jax: {
+             delimiters: [['\\$','\\$']],
+             ignoreClass: 'nostem|noasciimath'
+           }
+         });
+      script src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML'
+    =docinfo :head, '.html'
+  body id=@id class='impress-not-supported'
+    div class='fallback-message'
+        p
+          | Your browser <b>doesn't support the features required</b> by impress.js,
+            so you are presented with a simplified version of this presentation.
+        p
+          | For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.
+
+    - if attr? 'data-autoplay'
+      - data_autoplay = attr 'data-autoplay'
+
+    div id='impress' data-autoplay=data_autoplay
+
+      =content
+
+    - unless (docinfo_content = (docinfo :footer)).empty?
+    =docinfo_content
+
+    div id='impress-toolbar'
+    div class='hint'
+      p
+        | Use a spacebar or arrow keys to navigate. <br/> Press 'P' to launch speaker console.
+
+    script
+      | if ("ontouchstart" in document.documentElement) {
+          document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+        }
+
+    script src="js/impress.js"
+    script
+      | impress().init();
+
+    - if attr? 'source-highlighter'
+      script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"
+      script hljs.initHighlightingOnLoad()
